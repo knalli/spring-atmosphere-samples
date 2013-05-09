@@ -15,11 +15,9 @@
  */
 package org.springframework.mvc.samples.atmosphere;
 
-import java.util.concurrent.CountDownLatch;
 import javax.servlet.http.HttpServletRequest;
 
 import org.atmosphere.cpr.*;
-import org.atmosphere.plugin.redis.RedisFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mvc.samples.atmosphere.controller.Session;
@@ -44,16 +42,13 @@ public final class AtmosphereUtils {
 	public static void suspend(final AtmosphereResource resource, Session session) {
 
 		final Broadcaster rootBroadcaster = AtmosphereUtils.lookupBroadcaster();
-		rootBroadcaster.getBroadcasterConfig().addFilter(new RedisFilter());
 		rootBroadcaster.addAtmosphereResource(resource);
 
 		if (session.getUsername().startsWith("admin")) {
 			final Broadcaster broadcaster = BroadcasterFactory.getDefault().lookup("/admins/" + session.getUsername(), true);
-			broadcaster.getBroadcasterConfig().addFilter(new RedisFilter());
 			broadcaster.addAtmosphereResource(resource);
 		} else {
 			final Broadcaster broadcaster = BroadcasterFactory.getDefault().lookup("/users/" + session.getUsername(), true);
-			broadcaster.getBroadcasterConfig().addFilter(new RedisFilter());
 			broadcaster.addAtmosphereResource(resource);
 		}
 
