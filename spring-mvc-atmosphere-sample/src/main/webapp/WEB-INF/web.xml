@@ -18,6 +18,24 @@
 	<servlet>
 		<servlet-name>appServlet</servlet-name>
 		<servlet-class>org.atmosphere.cpr.MeteorServlet</servlet-class>
+
+		<!--
+			http://blog.nerdability.com/2013/01/a-rough-guide-to-atmosphere-with-spring.html
+			The recoverFromDestroyedBroadcaster prevents an exception being thrown when you
+			try to reuse a broadcaster that you have recently destroyed ( useful if you
+			want your client to subscribe using its own personal channel ).
+		-->
+		<init-param>
+			<param-name>org.atmosphere.cpr.recoverFromDestroyedBroadcaster</param-name>
+			<param-value>true</param-value>
+		</init-param>
+
+		<!-- Because of many broadcasters, threads should be shared.-->
+		<init-param>
+			<param-name>org.atmosphere.cpr.broadcaster.shareableThreadPool</param-name>
+			<param-value>true</param-value>
+		</init-param>
+
 		<init-param>
 			<param-name>org.atmosphere.servlet</param-name>
 			<param-value>org.springframework.web.servlet.DispatcherServlet</param-value>
