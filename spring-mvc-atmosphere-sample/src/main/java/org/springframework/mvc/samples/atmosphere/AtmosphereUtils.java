@@ -43,6 +43,11 @@ public final class AtmosphereUtils {
 	public static void suspend(final AtmosphereResource resource, Session session) {
 
 		AtmosphereUtils.lookupBroadcaster().addAtmosphereResource(resource);
+		if (session.getUsername().startsWith("admin")) {
+			BroadcasterFactory.getDefault().lookup("/admins/" + session.getUsername(), true).addAtmosphereResource(resource);
+		} else {
+			BroadcasterFactory.getDefault().lookup("/users/" + session.getUsername(), true).addAtmosphereResource(resource);
+		}
 
 		if (AtmosphereResource.TRANSPORT.LONG_POLLING.equals(resource.transport())) {
 			resource.resumeOnBroadcast(true).suspend(-1, false);
