@@ -23,6 +23,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.atmosphere.cpr.AtmosphereResource;
+import org.atmosphere.cpr.Broadcaster;
+import org.atmosphere.cpr.BroadcasterFactory;
 import org.atmosphere.cpr.MetaBroadcaster;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -83,22 +85,20 @@ public class HomeController {
 		List<TwitterMessage> messages = new ArrayList<TwitterMessage>();
 
 		final TwitterMessage twitterMessage = new TwitterMessage(-1L,
-				new Date(), session.getUsername() + " >> " + message, "websocket client", "");
+				new Date(), message, session.getUsername(), "");
 
 		messages.add(twitterMessage);
 		twitterMessages.setTwitterMessages(messages);
 
+		final String messageAsString = objectMapper.writeValueAsString(twitterMessages);
+
 		// Demo for broadcasting messages to a subset of all connected consumers.
 		if (message.startsWith("admin")) {
-			MetaBroadcaster.getDefault().broadcastTo("/admins/*",
-					objectMapper.writeValueAsString(twitterMessages));
+			BroadcasterFactory.getDefault().lookup("/admins/" + message.substring(0, "admin".length()+1), true).broadcast(messageAsString);
 		} else if (message.startsWith("user")) {
-			MetaBroadcaster.getDefault().broadcastTo("/users/*",
-					objectMapper.writeValueAsString(twitterMessages));
+			BroadcasterFactory.getDefault().lookup("/users/" + message.substring(0, "user".length()+1), true).broadcast(messageAsString);
 		} else {
-			event.getBroadcaster().getAtmosphereResources().size();
-			event.getBroadcaster().broadcast(
-					objectMapper.writeValueAsString(twitterMessages));
+			event.getBroadcaster().broadcast(messageAsString);
 		}
 	}
 
