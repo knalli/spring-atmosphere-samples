@@ -54,6 +54,9 @@ public class HomeController {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Autowired
+	private Session session;
+
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	public String test() {
 		return "test";
@@ -101,7 +104,7 @@ public class HomeController {
 	public void websockets(final AtmosphereResource event)
 			throws JsonGenerationException, JsonMappingException, IOException {
 
-		AtmosphereUtils.suspend(event);
+		AtmosphereUtils.suspend(event, session);
 
 		//final Broadcaster bc = event.getBroadcaster();
 
