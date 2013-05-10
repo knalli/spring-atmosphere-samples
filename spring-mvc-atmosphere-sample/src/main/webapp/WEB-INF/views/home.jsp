@@ -35,7 +35,9 @@
 				Status Messages will appear here...
 			</div>
 			<div id="content" class="prepend-1 span-17 prepend-top last">
-				<input id="message-field" type="text" size="40" value="Send a tweet to connected clients" /> <input id="message-button" type="button" value="Send" />
+				<form>
+					<input id="message-field" type="text" size="40" value="Send a tweet to connected clients" /> <input id="message-button" type="submit" value="Send" />
+				</form>
 				<ul id="twitterMessages">
 					<li id="placeHolder">Searching...</li>
 				</ul>
@@ -52,7 +54,14 @@
 					<tbody>
 						<tr>
 							<td>Protocol</td>
-							<td id="transportType">N/A</td>
+                            <td>
+                                <select id="transportTypeSelect">
+                                    <option value="N/A">Not available</option>
+                                    <option value="long-polling">Long Polling</option>
+                                    <option value="sse">Server Side Events</option>
+                                    <option value="websocket">WebSockets</option>
+                                </select>
+                            </td>
 						</tr>
 					</tbody>
 				</table>
@@ -87,6 +96,7 @@
 				{{#with this}}
 					<li>
 						<img alt='{{fromUser}}' title='{{fromUser}}' src='{{profileImageUrl}}' width='48' height='48'>
+                        <span>{{createdAtString}}</span>
 						<div>{{text}}</div>
 					</li>
 				{{/with}}
@@ -124,9 +134,9 @@
 
 				function refresh() {
 
-					console.log("Refreshing data tables...");
+					// console.log("Refreshing data tables...");
 
-					$('#transportType').html(asyncHttpStatistics.transportType);
+					$('#transportTypeSelect').val(asyncHttpStatistics.transportType);
 					$('#responseState').html(asyncHttpStatistics.responseState);
 					$('#numberOfCallbackInvocations').html(asyncHttpStatistics.numberOfTotalMessages);
 					$('#numberOfTweets').html(asyncHttpStatistics.numberOfTweets);
@@ -156,12 +166,12 @@
 					//$.atmosphere.log('info', ["response.transport: " + response.transport]);
 
 					var resultType = result['@class'];
-					console.log('Object type returned: ' + resultType);
+					//console.log('Object type returned: ' + resultType);
 
 					if (resultType == "org.springframework.mvc.samples.atmosphere.model.TwitterMessage") {
 						handleTwitterMessage(new TwitterMessage(result));
 					} else if (resultType == "org.springframework.mvc.samples.atmosphere.model.TwitterMessages") {
-						console.log('raw-----' + result);
+						//console.log('raw-----' + result);
 						handleTwitterMessages(new TwitterMessages(result.twitterMessages));
 					} else if (resultType == "org.springframework.mvc.samples.atmosphere.model.StatusMessage") {
 						handleStatusMessage(new StatusMessage(result));
@@ -190,10 +200,6 @@
 
 				function handleTwitterMessages(data) {
 
-					console.log("Handling Twitter Messages...");
-					var x = data.toJSON();
-					console.log(x);
-
 					var visible = $('#placeHolder').is(':visible');
 
  					if (data.length > 0 && visible) {
@@ -205,9 +211,17 @@
 					var context = {
 							tweets : data.toJSON()
 						};
+					// apply current date string
+					for (var i = 0; i < context.tweets.length; i++) {
+						context.tweets[i].createdAtString = new Date(context.tweets[i].createdAt).toString()
+					}
 					var html = tweetTemplate(context);
 
-					$(html).hide().prependTo( "#twitterMessages").fadeIn();
+					// Remove old ones.
+					$('#twitterMessages').find('li:gt(20)').slideUp(function(){$(this).remove();});
+
+					// Add new ones.
+					$(html).hide().prependTo( "#twitterMessages").slideDown();
 
 				}
 
@@ -252,8 +266,18 @@
 
 				subSocket = socket.subscribe(request);
 
-				$('#message-button').click(function() {
+				$('#message-button').parent('form').submit(function(event) {
+					event.preventDefault();
 					subSocket.push($('#message-field').val());
+				});
+
+				$('#transportTypeSelect').change(function(){
+					var value = this.value;
+					subSocket.close();
+					if (['long-polling', 'sse', 'websocket'].indexOf(value) !== -1) {
+						request.transport = value;
+						subSocket = socket.subscribe(request);
+					}
 				});
 			});
 		</script>
