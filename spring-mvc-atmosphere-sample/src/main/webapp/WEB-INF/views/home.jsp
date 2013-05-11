@@ -24,6 +24,11 @@
 
 	</head>
 	<body>
+        <header>
+            Username: <sec:authentication property="principal.username" />
+            | <label for="loggedIn">Logged in: <input id="loggedIn" type="checkbox" disabled <sec:authorize access="isFullyAuthenticated()">checked="checked"</sec:authorize></label>
+            | <sec:authorize access="isFullyAuthenticated()"><a href="/doLogout">Logout</a></sec:authorize>
+        </header>
 		<div class="container">
 			<div id="header" class="prepend-1 span-22 append-1 last">
 				<h1 class="loud">Welcome to Spring Web MVC - Atmosphere Sample</h1>
@@ -232,7 +237,7 @@
 
 				var socket = $.atmosphere;
 				var subSocket;
-				var transport = 'websocket';
+				var transport = 'sse';
 				var websocketUrl = "${fn:replace(r.requestURL, r.requestURI, '')}${r.contextPath}/websockets/";
 
 				var request = {
