@@ -70,6 +70,14 @@ public class HomeController {
 		return "home";
 	}
 
+	/**
+	 * Simply selects the home view to render by returning its name.
+	 */
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String login() {
+		return "login";
+	}
+
 	@RequestMapping(value = "/websockets", method = RequestMethod.POST)
 	@ResponseBody
 	public void post(final AtmosphereResource event, @RequestBody String message)

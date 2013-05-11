@@ -41,10 +41,16 @@
 			<param-value>springSecurityFilterChain</param-value>
 		</init-param>
 
-		<!-- Enables Atmosphere Session Support -->
+		<!-- Disable Atmosphere Session Support (conflicts with Spring Security) -->
 		<init-param>
 			<param-name>org.atmosphere.cpr.sessionSupport</param-name>
-			<param-value>true</param-value>
+			<param-value>false</param-value>
+		</init-param>
+
+		<!-- Disable Websockets (i.e. Loadbalancer issues) -->
+		<init-param>
+			<param-name>org.atmosphere.useWebSocket</param-name>
+			<param-value>false</param-value>
 		</init-param>
 
 		<load-on-startup>1</load-on-startup>
