@@ -46,6 +46,20 @@
 		</init-param>
 
 		<!--
+			Because a MeteorServlet builds its own Servlet Processor, the atmosphere.xml's
+			settings will be ignored. Therefor, a dedicated config file aware broadcaster
+			setup is used.
+		-->
+		<init-param>
+			<param-name>org.atmosphere.cpr.broadcasterClass</param-name>
+			<param-value>org.springframework.mvc.samples.atmosphere.redis.RedisBroadcaster</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.springframework.mvc.samples.atmosphere.redis.RedisBroadcaster.config</param-name>
+			<param-value>atmosphere.redis.properties</param-value>
+		</init-param>
+
+		<!--
 			IMPORTANT: Because Atmosphere wraps the actual Spring Servlet, the following
 			both configuration properties ensure that the security filter will be
 			processed within Atmosphere.

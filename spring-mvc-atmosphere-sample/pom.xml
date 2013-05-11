@@ -16,6 +16,7 @@
 		<spring-social-twitter.version>1.0.2.RELEASE</spring-social-twitter.version>
 		<junit.version>4.10</junit.version>
 		<atmosphere.version>1.0.12</atmosphere.version>
+		<jedis.version>2.0.0</jedis.version>
 	</properties>
 
     <dependencyManagement>
@@ -178,10 +179,10 @@
 			<artifactId>atmosphere-runtime</artifactId>
 			<version>${atmosphere.version}</version>
 		</dependency>
-        <dependency>
-			<groupId>org.atmosphere</groupId>
-			<artifactId>atmosphere-redis</artifactId>
-			<version>${atmosphere.version}</version>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${jedis.version}</version>
 		</dependency>
 
 		<dependency>

@@ -19,6 +19,9 @@
     <logger name="org.atmosphere.cpr">
         <level value="DEBUG" />
     </logger>
+    <logger name="org.springframework.mvc.samples.atmosphere.redis">
+        <level value="DEBUG" />
+    </logger>
 
 
     <root>
